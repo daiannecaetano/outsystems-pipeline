@@ -10,7 +10,14 @@ parameters:
   displayName: Triggered By
   type: string
   default: ''
-
+- name: ApplicationScope
+  displayName: Application Scope
+  type: string
+  default: ''
+- name: ApplicationScopeWithTests
+  displayName: Application Scope With Tests
+  type: string
+  default: ''
 steps:
 - task: PowerShell@2
   inputs:
