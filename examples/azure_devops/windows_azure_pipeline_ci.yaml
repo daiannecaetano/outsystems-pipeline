@@ -18,6 +18,11 @@ parameters:
   displayName: Application Scope With Tests
   type: string
   default: ''
+- name: ArtifactsBuildFolder
+  displayName: Artifacts Build Folder
+  type: string
+  default: '$(Build.ArtifactStagingDirectory)'  # Default to a common artifact directory
+
 steps:
 - task: PowerShell@2
   inputs:
