@@ -28,15 +28,22 @@ parameters:
   default: '1.0.0'  # Replace with the desired default version
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-    addToPath: true
-
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
+      # Check if Python is installed
+      $python = Get-Command python -ErrorAction SilentlyContinue
+      if (-not $python) {
+        Write-Host "Python not found. Downloading and installing Python..."
+        Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe -OutFile python-installer.exe
+        Start-Process python-installer.exe -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1" -Wait
+        Remove-Item -Force python-installer.exe
+      } else {
+        Write-Host "Python is already installed."
+      }
+
+      # Verify Python installation
       python --version
       if ($?) {
         Write-Host "Python is installed and available."
@@ -44,8 +51,7 @@ steps:
         Write-Error "Python is not installed or not available in the PATH."
         exit 1
       }
-    workingDirectory: $(System.DefaultWorkingDirectory)
-  displayName: 'Verify Python Installation'
+    displayName: 'Ensure Python is Installed'
 
 - task: PowerShell@2
   inputs:
