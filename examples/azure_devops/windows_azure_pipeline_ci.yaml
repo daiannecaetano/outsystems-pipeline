@@ -37,6 +37,20 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
+      python --version
+      if ($?) {
+        Write-Host "Python is installed and available."
+      } else {
+        Write-Error "Python is not installed or not available in the PATH."
+        exit 1
+      }
+    workingDirectory: $(System.DefaultWorkingDirectory)
+  displayName: 'Verify Python Installation'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
       Write-Host "Creating $env:ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
       mkdir $env:ArtifactsBuildFolder -Force
