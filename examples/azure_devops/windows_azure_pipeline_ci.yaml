@@ -1,4 +1,16 @@
----
+# ******************************************************************
+# Declare parameters
+# ******************************************************************
+parameters:
+- name: TriggerManifest
+  displayName: Trigger Manifest
+  type: string
+  default: ''
+- name: TriggeredBy
+  displayName: Triggered By
+  type: string
+  default: ''
+
 steps:
 - task: PowerShell@2
   inputs:
@@ -19,7 +31,7 @@ steps:
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    script: python -m outsystems.pipeline.fetch_lifetime_data --artifacts "$(ArtifactsBuildFolder)" --lt_url  $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion)
+    script: python -m outsystems.pipeline.fetch_lifetime_data --artifacts "$(ArtifactsBuildFolder)" --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion)
   displayName: 'Fetch Lifetime Data'
 
 - task: PowerShell@2
@@ -72,4 +84,3 @@ steps:
     }
   condition: always()
   displayName: 'Stash generated *.cache files into pipeline logs'
-...
