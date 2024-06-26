@@ -28,6 +28,11 @@ parameters:
   default: '1.0.0'  # Replace with the desired default version
 
 steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
