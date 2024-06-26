@@ -28,9 +28,12 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
+      param (
+        [string]$ArtifactsBuildFolder
+      )
       Write-Host "Create $ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
-      mkdir "$ArtifactsBuildFolder" -Force
+      mkdir $ArtifactsBuildFolder -Force
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Create Artifacts Folder'
 
@@ -45,33 +48,45 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
-      python -m outsystems.pipeline.fetch_lifetime_data --artifacts "$ArtifactsBuildFolder" --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion)
+      param (
+        [string]$ArtifactsBuildFolder
+      )
+      python -m outsystems.pipeline.fetch_lifetime_data --artifacts $ArtifactsBuildFolder --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion)
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
   displayName: 'Fetch Lifetime Data'
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
-      python -m outsystems.pipeline.deploy_latest_tags_to_target_env --artifacts "$ArtifactsBuildFolder" --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion) --source_env $(DevelopmentEnvironment) --destination_env $(RegressionEnvironment) --app_list "$(ApplicationScopeWithTests)"
+      param (
+        [string]$ArtifactsBuildFolder
+      )
+      python -m outsystems.pipeline.deploy_latest_tags_to_target_env --artifacts $ArtifactsBuildFolder --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion) --source_env $(DevelopmentEnvironment) --destination_env $(RegressionEnvironment) --app_list $(ApplicationScopeWithTests)
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
   displayName: 'Deploy to CI Environment'
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
-      python -m outsystems.pipeline.generate_unit_testing_assembly --artifacts "$ArtifactsBuildFolder" --app_list "$(ApplicationScopeWithTests)" --cicd_probe_env $(ProbeEnvironmentURL) --bdd_framework_env $(BddEnvironmentURL)
+      param (
+        [string]$ArtifactsBuildFolder
+      )
+      python -m outsystems.pipeline.generate_unit_testing_assembly --artifacts $ArtifactsBuildFolder --app_list $(ApplicationScopeWithTests) --cicd_probe_env $(ProbeEnvironmentURL) --bdd_framework_env $(BddEnvironmentURL)
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
   displayName: 'Generate URLs for BDD testing'
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
-      python -m outsystems.pipeline.evaluate_test_results --artifacts "$ArtifactsBuildFolder"
+      param (
+        [string]$ArtifactsBuildFolder
+      )
+      python -m outsystems.pipeline.evaluate_test_results --artifacts $ArtifactsBuildFolder
       exit 0
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
   displayName: 'Evaluate Test Results'
   continueOnError: true
 
@@ -86,8 +101,11 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
+      param (
+        [string]$ArtifactsBuildFolder
+      )
       New-Item -Force -Path "$ArtifactsBuildFolder\deployment_data" -Name "ApplicationScope.cache" -ItemType "file" -Value "$(ApplicationScope)"
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
   displayName: 'Write ApplicationScope to File'
   continueOnError: true
 
@@ -101,12 +119,15 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
+      param (
+        [string]$ArtifactsBuildFolder
+      )
       Write-Host "Stashing the *.cache generated in the pipeline logs"
       $cache_files = Get-ChildItem -Path "$ArtifactsBuildFolder\*.cache" -Recurse
       foreach ($cfile in $cache_files) {
         Write-Host "Stashing $cfile"
         Write-Output "##vso[task.uploadfile]$cfile"
       }
+    arguments: -ArtifactsBuildFolder "$(ArtifactsBuildFolder)"
     condition: always()
   displayName: 'Stash generated *.cache files into pipeline logs'
