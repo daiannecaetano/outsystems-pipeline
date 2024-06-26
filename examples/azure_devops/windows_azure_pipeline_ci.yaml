@@ -29,8 +29,9 @@ steps:
     targetType: 'inline'
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
-      Write-Host "Create $env:ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
+      Write-Host "Creating $env:ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
       mkdir $env:ArtifactsBuildFolder -Force
+      Write-Host "ArtifactsBuildFolder: $env:ArtifactsBuildFolder"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Create Artifacts Folder'
 
@@ -47,6 +48,8 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
       python -m outsystems.pipeline.fetch_lifetime_data --artifacts $env:ArtifactsBuildFolder --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion)
+      Write-Host "Fetched Lifetime Data to $env:ArtifactsBuildFolder"
+    workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Fetch Lifetime Data'
 
 - task: PowerShell@2
@@ -55,6 +58,8 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
       python -m outsystems.pipeline.deploy_latest_tags_to_target_env --artifacts $env:ArtifactsBuildFolder --lt_url $(LifeTimeHostname) --lt_token $(LifeTimeServiceAccountToken) --lt_api_version $(LifeTimeAPIVersion) --source_env $(DevelopmentEnvironment) --destination_env $(RegressionEnvironment) --app_list "$(ApplicationScopeWithTests)"
+      Write-Host "Deployed to CI Environment from $env:ArtifactsBuildFolder"
+    workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Deploy to CI Environment'
 
 - task: PowerShell@2
@@ -63,6 +68,8 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
       python -m outsystems.pipeline.generate_unit_testing_assembly --artifacts $env:ArtifactsBuildFolder --app_list "$(ApplicationScopeWithTests)" --cicd_probe_env $(ProbeEnvironmentURL) --bdd_framework_env $(BddEnvironmentURL)
+      Write-Host "Generated URLs for BDD testing in $env:ArtifactsBuildFolder"
+    workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Generate URLs for BDD testing'
 
 - task: PowerShell@2
@@ -71,7 +78,9 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
       python -m outsystems.pipeline.evaluate_test_results --artifacts $env:ArtifactsBuildFolder
+      Write-Host "Evaluated Test Results in $env:ArtifactsBuildFolder"
       exit 0
+    workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Evaluate Test Results'
   continueOnError: true
 
@@ -88,6 +97,8 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "$(ArtifactsBuildFolder)"
       New-Item -Force -Path "$env:ArtifactsBuildFolder\deployment_data" -Name "ApplicationScope.cache" -ItemType "file" -Value "$(ApplicationScope)"
+      Write-Host "Wrote ApplicationScope to $env:ArtifactsBuildFolder\deployment_data\ApplicationScope.cache"
+    workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Write ApplicationScope to File'
   continueOnError: true
 
@@ -108,5 +119,6 @@ steps:
         Write-Host "Stashing $cfile"
         Write-Output "##vso[task.uploadfile]$cfile"
       }
+    workingDirectory: $(System.DefaultWorkingDirectory)
     condition: always()
   displayName: 'Stash generated *.cache files into pipeline logs'
