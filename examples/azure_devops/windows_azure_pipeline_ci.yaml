@@ -22,6 +22,10 @@ parameters:
   displayName: Artifacts Build Folder
   type: string
   default: '$(Build.ArtifactStagingDirectory)'  # Default to a common artifact directory
+- name: OSPackageVersion
+  displayName: OS Package Version
+  type: string
+  default: '1.0.0'  # Replace with the desired default version
 
 steps:
 - task: PowerShell@2
@@ -38,7 +42,9 @@ steps:
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    script: pip install -U outsystems-pipeline==$(OSPackageVersion)
+    script: |
+      $osPackageVersion = "${{ parameters.OSPackageVersion }}"
+      pip install -U outsystems-pipeline==$osPackageVersion
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Install OutSystems Pipeline Package'
 
