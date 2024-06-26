@@ -44,7 +44,7 @@ steps:
     targetType: 'inline'
     script: |
       $osPackageVersion = "${{ parameters.OSPackageVersion }}"
-      pip install -U outsystems-pipeline==$osPackageVersion
+      python -m pip install -U outsystems-pipeline==$osPackageVersion
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Install OutSystems Pipeline Package'
 
