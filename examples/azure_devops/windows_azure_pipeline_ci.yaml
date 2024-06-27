@@ -18,10 +18,10 @@ parameters:
   displayName: Application Scope With Tests
   type: string
   default: ''
-- name: ArtifactsBuildFolder
-  displayName: Artifacts Build Folder
-  type: string
-  default: '$(Build.ArtifactStagingDirectory)'  # Default to a common artifact directory
+#- name: ArtifactsBuildFolder
+#  displayName: Artifacts Build Folder
+#  type: string
+#  default: '$(Build.ArtifactStagingDirectory)'  # Default to a common artifact directory
 - name: OSPackageVersion
   displayName: OS Package Version
   type: string
@@ -58,8 +58,8 @@ parameters:
   displayName: Artifact Name
   type: string
   default: 'deployment_manifest'
-- name: ArtifactBuildFolder
-  displayName: Artifact Build Folder
+- name: ArtifactsBuildFolder
+  displayName: Artifacts Build Folder
   type: string
   default: 'Artifacts'
 
