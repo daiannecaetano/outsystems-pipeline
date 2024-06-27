@@ -50,10 +50,10 @@ parameters:
   displayName: Probe Environment URL
   type: string
   default: 'https://outsystems.dev.askblue.pt/'
-- name: BddEnvironmentURL
-  displayName: BDD Environment URL
-  type: string
-  default: 'https://outsystems.qa.askblue.pt/'
+#- name: BddEnvironmentURL
+#  displayName: BDD Environment URL
+#  type: string
+# default: 'https://outsystems.qa.askblue.pt/'
 - name: ArtifactName
   displayName: Artifact Name
   type: string
@@ -141,37 +141,37 @@ steps:
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Deploy to CI Environment'
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      $app_list = "${{ parameters.ApplicationScopeWithTests }}"
-      $cicd_probe_env = "${{ parameters.ProbeEnvironmentURL }}"
-      $bdd_framework_env = "${{ parameters.BddEnvironmentURL }}"
-      python -m outsystems.pipeline.generate_unit_testing_assembly --artifacts $env:ArtifactsBuildFolder --app_list "$app_list" --cicd_probe_env $cicd_probe_env --bdd_framework_env $bdd_framework_env
-      Write-Host "Generated URLs for BDD testing in $env:ArtifactsBuildFolder"
-    workingDirectory: $(System.DefaultWorkingDirectory)
-  displayName: 'Generate URLs for BDD testing'
+#- task: PowerShell@2
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
+#      $app_list = "${{ parameters.ApplicationScopeWithTests }}"
+#      $cicd_probe_env = "${{ parameters.ProbeEnvironmentURL }}"
+#      $bdd_framework_env = "${{ parameters.BddEnvironmentURL }}"
+#      python -m outsystems.pipeline.generate_unit_testing_assembly --artifacts $env:ArtifactsBuildFolder --app_list "$app_list" --cicd_probe_env $cicd_probe_env --bdd_framework_env $bdd_framework_env
+#      Write-Host "Generated URLs for BDD testing in $env:ArtifactsBuildFolder"
+#    workingDirectory: $(System.DefaultWorkingDirectory)
+#  displayName: 'Generate URLs for BDD testing'
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      python -m outsystems.pipeline.evaluate_test_results --artifacts $env:ArtifactsBuildFolder
-      Write-Host "Evaluated Test Results in $env:ArtifactsBuildFolder"
-      exit 0
-    workingDirectory: $(System.DefaultWorkingDirectory)
-  displayName: 'Evaluate Test Results'
-  continueOnError: true
+#- task: PowerShell@2
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
+#      python -m outsystems.pipeline.evaluate_test_results --artifacts $env:ArtifactsBuildFolder
+#      Write-Host "Evaluated Test Results in $env:ArtifactsBuildFolder"
+#      exit 0
+#    workingDirectory: $(System.DefaultWorkingDirectory)
+#  displayName: 'Evaluate Test Results'
+#  continueOnError: true
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFiles: '$(ArtifactsBuildFolder)\junit-result.xml'
-    mergeTestResults: true
-    failTaskOnFailedTests: true
+#- task: PublishTestResults@2
+#  displayName: 'Publish Test Results'
+#  inputs:
+#    testResultsFiles: '$(ArtifactsBuildFolder)\junit-result.xml'
+#    mergeTestResults: true
+#    failTaskOnFailedTests: true
 
 - task: PowerShell@2
   inputs:
