@@ -29,7 +29,7 @@ parameters:
 - name: LifeTimeServiceAccountToken
   displayName: LifeTime Service Account Token
   type: string
-  default: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJsaWZldGltZSIsInN1YiI6Ik1HWTJPR1EyTnprdE5qSmpPQzAwT0RVNUxXRXlNRFV0TW1ZeE1EVXdaVEkxT0RVeSIsImF1ZCI6ImxpZmV0aWxlIiwiaWF0IjoiMTcxOTI1NTM2MiIsImppdCI6IkJ1WEMyV213cEQifQ==.hffnxY6A1sZFuCzqTszJIlUki/RLJDxLLVOhSM31ZIQ='
+  default: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJsaWZldGltZSIsInN1YiI6Ik1HWTJPR1EyTnprdE5qSmpPQzAwT0RVNUxXRXlNRFV0TW1ZeE1EVXdaVEkxT0RVeSIsImF1ZCI6ImxpZmV0aW1lIiwiaWF0IjoiMTcxOTI1NTM2MiIsImppdCI6IkJ1WEMyV213cEQifQ==.hffnxY6A1sZFuCzqTszJIlUki/RLJDxLLVOhSM31ZIQ='
 - name: LifeTimeAPIVersion
   displayName: LifeTime API Version
   type: string
