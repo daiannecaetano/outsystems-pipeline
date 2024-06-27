@@ -53,7 +53,7 @@ parameters:
 - name: ArtifactsBuildFolder
   displayName: Artifacts Build Folder
   type: string
-  default: 'Artifacts'
+  default: 'ArtifactsBuildFolder'
 
 steps:
 - task: PowerShell@2
