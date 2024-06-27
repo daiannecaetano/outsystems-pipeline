@@ -29,7 +29,7 @@ parameters:
 - name: LifeTimeServiceAccountToken
   displayName: LifeTime Service Account Token
   type: string
-  default: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJsaWZldGltZSIsInN1YiI6Ik1HWTJPR1EyTnprdE5qSmpPQzAwT0RVNUxXRXlNRFV0TW1ZeE1EVXdaVEkxT0RVeSIsImF1ZCI6ImxpZmV0aW1lIiwiaWF0IjoiMTcxOTI1NTM2MiIsImppdCI6IkJ1WEMyV213cEQifQ==.hffnxY6A1sZFuCzqTszJIlUki/RLJDxLLVOhSM31ZIQ='
+  default: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJsaWZldGltZSIsInN1YiI6Ik1HWTJPR1EyTnprdE5qSmpPQzAwT0RVNUxXRXlNRFV0TW1ZeE1EVXdaVEkxT0RVeSIsImF1ZCI6ImxpZmV0aWxlIiwiaWF0IjoiMTcxOTI1NTM2MiIsImppdCI6IkJ1WEMyV213cEQifQ==.hffnxY6A1sZFuCzqTszJIlUki/RLJDxLLVOhSM31ZIQ='
 - name: LifeTimeAPIVersion
   displayName: LifeTime API Version
   type: string
@@ -91,7 +91,7 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
       Write-Host "Creating $env:ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
-      mkdir "$env:ArtifactsBuildFolder\deployment_data" -Force
+      mkdir "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data" -Force
       Write-Host "ArtifactsBuildFolder: $env:ArtifactsBuildFolder"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Create Artifacts Folder'
@@ -116,8 +116,8 @@ steps:
       $lt_url = "${{ parameters.LifeTimeHostname }}"
       $lt_token = "${{ parameters.LifeTimeServiceAccountToken }}"
       $lt_api_version = "${{ parameters.LifeTimeAPIVersion }}"
-      python -m outsystems.pipeline.fetch_lifetime_data --artifacts $env:ArtifactsBuildFolder --lt_url $lt_url --lt_token $lt_token --lt_api_version $lt_api_version
-      Write-Host "Fetched Lifetime Data to $env:ArtifactsBuildFolder"
+      python -m outsystems.pipeline.fetch_lifetime_data --artifacts $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder --lt_url $lt_url --lt_token $lt_token --lt_api_version $lt_api_version
+      Write-Host "Fetched Lifetime Data to $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Fetch Lifetime Data'
 
@@ -132,8 +132,8 @@ steps:
       $source_env = "${{ parameters.DevelopmentEnvironment }}"
       $destination_env = "${{ parameters.RegressionEnvironment }}"
       $app_list = "${{ parameters.ApplicationScopeWithTests }}"
-      python -m outsystems.pipeline.deploy_latest_tags_to_target_env --artifacts $env:ArtifactsBuildFolder --lt_url $lt_url --lt_token $lt_token --lt_api_version $lt_api_version --source_env $source_env --destination_env $destination_env --app_list "$app_list"
-      Write-Host "Deployed to CI Environment from $env:ArtifactsBuildFolder"
+      python -m outsystems.pipeline.deploy_latest_tags_to_target_env --artifacts $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder --lt_url $lt_url --lt_token $lt_token --lt_api_version $lt_api_version --source_env $source_env --destination_env $destination_env --app_list "$app_list"
+      Write-Host "Deployed to CI Environment from $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Deploy to CI Environment'
 
@@ -142,8 +142,8 @@ steps:
     targetType: 'inline'
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      New-Item -Force -Path "$env:ArtifactsBuildFolder\deployment_data" -Name "ApplicationScope.cache" -ItemType "file" -Value "$(ApplicationScope)"
-      Write-Host "Wrote ApplicationScope to $env:ArtifactsBuildFolder\deployment_data\ApplicationScope.cache"
+      New-Item -Force -Path "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data" -Name "ApplicationScope.cache" -ItemType "file" -Value "$(ApplicationScope)"
+      Write-Host "Wrote ApplicationScope to $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data\ApplicationScope.cache"
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Write ApplicationScope to File'
   continueOnError: true
@@ -153,8 +153,8 @@ steps:
     targetType: 'inline'
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      Write-Host "Contents of $env:ArtifactsBuildFolder\deployment_data:"
-      Get-ChildItem "$env:ArtifactsBuildFolder\deployment_data" -Recurse
+      Write-Host "Contents of $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data:"
+      Get-ChildItem "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data" -Recurse
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Log Artifacts Folder Contents'
 
@@ -170,7 +170,7 @@ steps:
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
       Write-Host "Stashing the *.cache generated in the pipeline logs"
-      $cache_files = Get-ChildItem -Path "$env:ArtifactsBuildFolder\deployment_data\*.cache" -Recurse
+      $cache_files = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data\*.cache" -Recurse
       foreach ($cfile in $cache_files) {
         Write-Host "Stashing $cfile"
         Write-Output "##vso[task.uploadfile]$cfile"
