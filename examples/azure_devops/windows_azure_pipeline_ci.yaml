@@ -148,6 +148,16 @@ steps:
   displayName: 'Write ApplicationScope to File'
   continueOnError: true
 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
+      Write-Host "Contents of $env:ArtifactsBuildFolder\deployment_data:"
+      Get-ChildItem "$env:ArtifactsBuildFolder\deployment_data" -Recurse
+    workingDirectory: $(System.DefaultWorkingDirectory)
+  displayName: 'Log Artifacts Folder Contents'
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: deployment_manifest'
   inputs:
