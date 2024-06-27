@@ -178,3 +178,18 @@ steps:
     workingDirectory: $(System.DefaultWorkingDirectory)
     condition: always()
   displayName: 'Stash generated *.cache files into pipeline logs'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
+      $pathToCheck = "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data"
+      if (Test-Path -Path $pathToCheck) {
+        Write-Host "Directory $pathToCheck exists."
+      } else {
+        Write-Error "Directory $pathToCheck does not exist."
+        exit 1
+      }
+    workingDirectory: $(System.DefaultWorkingDirectory)
+  displayName: 'Verify Directory Existence'
