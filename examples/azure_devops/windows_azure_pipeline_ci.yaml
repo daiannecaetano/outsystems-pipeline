@@ -53,7 +53,7 @@ parameters:
 - name: ArtifactsBuildFolder
   displayName: Artifacts Build Folder
   type: string
-  default: 'ArtifactsBuildFolder'
+  default: 'artifacts'
 
 steps:
 - task: PowerShell@2
@@ -90,9 +90,15 @@ steps:
     targetType: 'inline'
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      Write-Host "Creating $env:ArtifactsBuildFolder directory on $(System.DefaultWorkingDirectory)"
-      mkdir "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data" -Force
-      Write-Host "ArtifactsBuildFolder: $env:ArtifactsBuildFolder"
+      $fullPath = "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data"
+      Write-Host "Creating directory: $fullPath"
+      mkdir $fullPath -Force
+      if (Test-Path -Path $fullPath) {
+        Write-Host "Successfully created directory: $fullPath"
+      } else {
+        Write-Error "Failed to create directory: $fullPath"
+        exit 1
+      }
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Create Artifacts Folder'
 
@@ -142,8 +148,14 @@ steps:
     targetType: 'inline'
     script: |
       $env:ArtifactsBuildFolder = "${{ parameters.ArtifactsBuildFolder }}"
-      New-Item -Force -Path "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data" -Name "ApplicationScope.cache" -ItemType "file" -Value "$(ApplicationScope)"
-      Write-Host "Wrote ApplicationScope to $(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data\ApplicationScope.cache"
+      $fullPath = "$(System.DefaultWorkingDirectory)\$env:ArtifactsBuildFolder\deployment_data\ApplicationScope.cache"
+      New-Item -Force -Path $fullPath -ItemType "file" -Value "$(ApplicationScope)"
+      if (Test-Path -Path $fullPath) {
+        Write-Host "Successfully wrote ApplicationScope to $fullPath"
+      } else {
+        Write-Error "Failed to write ApplicationScope to $fullPath"
+        exit 1
+      }
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Write ApplicationScope to File'
   continueOnError: true
