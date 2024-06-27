@@ -58,6 +58,10 @@ parameters:
   displayName: Artifact Name
   type: string
   default: 'deployment_manifest'
+- name: ArtifactBuildFolder
+  displayName: Artifact Build Folder
+  type: string
+  default: 'Artifacts'
 
 steps:
 - task: PowerShell@2
