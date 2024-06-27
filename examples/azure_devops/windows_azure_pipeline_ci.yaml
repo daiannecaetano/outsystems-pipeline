@@ -41,11 +41,11 @@ parameters:
 - name: DevelopmentEnvironment
   displayName: Development Environment
   type: string
-  default: 'https://outsystems.dev.askblue.pt/'
+  default: 'Development'
 - name: RegressionEnvironment
   displayName: Regression Environment
   type: string
-  default: 'https://outsystems.qa.askblue.pt/'
+  default: 'QualityAssurance#1'
 - name: ProbeEnvironmentURL
   displayName: Probe Environment URL
   type: string
