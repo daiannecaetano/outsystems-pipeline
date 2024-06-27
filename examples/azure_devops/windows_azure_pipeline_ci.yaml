@@ -53,7 +53,7 @@ parameters:
 - name: BddEnvironmentURL
   displayName: BDD Environment URL
   type: string
-  default: ''
+  default: 'https://outsystems.qa.askblue.pt/'
 - name: ArtifactName
   displayName: Artifact Name
   type: string
