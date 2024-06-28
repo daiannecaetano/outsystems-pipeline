@@ -106,13 +106,26 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      # Update pip to the latest version
-      python -m pip install --upgrade pip
+      # Update pip and setuptools to the latest version
+      python -m pip install --upgrade pip setuptools
 
+      # Install OutSystems pipeline package
       $osPackageVersion = "${{ parameters.OSPackageVersion }}"
       python -m pip install -U outsystems-pipeline==$osPackageVersion
+
+      # Download and modify xunitparser if necessary
+      $xunitparserVersion = "1.3.3" # Specify the version if needed
+      pip download xunitparser==$xunitparserVersion
+      $xunitparserFile = "xunitparser-$xunitparserVersion.tar.gz"
+      tar -xzf $xunitparserFile
+      cd xunitparser-$xunitparserVersion
+      (Get-Content setup.py).replace('use_2to3=True,', '') | Set-Content setup.py
+      python setup.py install
+      cd ..
+      Remove-Item -Recurse -Force xunitparser-$xunitparserVersion
+      Remove-Item -Force $xunitparserFile
     workingDirectory: $(System.DefaultWorkingDirectory)
-  displayName: 'Install OutSystems Pipeline Package'
+  displayName: 'Install and Fix Packages'
 
 - task: PowerShell@2
   inputs:
