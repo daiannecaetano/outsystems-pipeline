@@ -117,17 +117,19 @@ steps:
       $xunitparserVersion = "1.3.3"
       $xunitparserFile = "xunitparser-$xunitparserVersion.tar.gz"
       $retryCount = 3
+      $downloadSuccess = $false
 
       for ($i = 0; $i -lt $retryCount; $i++) {
         pip download xunitparser==$xunitparserVersion
         if (Test-Path -Path $xunitparserFile) {
           Write-Host "Downloaded xunitparser file: $xunitparserFile"
+          $downloadSuccess = $true
           break
         }
         Write-Host "Retrying download... ($($i+1)/$retryCount)"
       }
 
-      if (Test-Path -Path $xunitparserFile) {
+      if ($downloadSuccess) {
         tar -xzf $xunitparserFile
         $extractedDir = "xunitparser-$xunitparserVersion"
         if (Test-Path -Path $extractedDir) {
