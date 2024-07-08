@@ -112,43 +112,6 @@ steps:
       # Install OutSystems pipeline package
       $osPackageVersion = "${{ parameters.OSPackageVersion }}"
       python -m pip install -U outsystems-pipeline==$osPackageVersion
-
-      # Download, modify and install xunitparser
-      $xunitparserVersion = "1.3.3"
-      $xunitparserFile = "xunitparser-$xunitparserVersion.tar.gz"
-      $retryCount = 3
-      $downloadSuccess = $false
-
-      for ($i = 0; $i -lt $retryCount; $i++) {
-        pip download xunitparser==$xunitparserVersion
-        if (Test-Path -Path $xunitparserFile) {
-          Write-Host "Downloaded xunitparser file: $xunitparserFile"
-          $downloadSuccess = $true
-          break
-        }
-        Write-Host "Retrying download... ($($i+1)/$retryCount)"
-      }
-
-      if ($downloadSuccess) {
-        tar -xzf $xunitparserFile
-        $extractedDir = "xunitparser-$xunitparserVersion"
-        if (Test-Path -Path $extractedDir) {
-          Write-Host "Modifying setup.py to remove use_2to3"
-          (Get-Content "$extractedDir\setup.py").replace('use_2to3=True,', '') | Set-Content "$extractedDir\setup.py"
-          Write-Host "Installing xunitparser"
-          cd $extractedDir
-          python setup.py install
-          cd ..
-          Remove-Item -Recurse -Force $extractedDir
-          Remove-Item -Force $xunitparserFile
-        } else {
-          Write-Error "Extraction failed or the directory does not exist: $extractedDir"
-          exit 1
-        }
-      } else {
-        Write-Error "Downloaded xunitparser file does not exist: $xunitparserFile"
-        exit 1
-      }
     workingDirectory: $(System.DefaultWorkingDirectory)
   displayName: 'Install and Fix Packages'
 
